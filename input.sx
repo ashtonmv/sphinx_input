@@ -1,0 +1,46 @@
+format paw;
+include <parameters.sx>;
+pawPot {
+   species {
+      name = "Mg";
+      potType = "VASP";
+      element = "Mg";
+      potential = <PAWpot/Mg-pbe.vasppaw>;
+   }
+}
+
+include "structure.sx";
+
+basis {
+   eCut=25;
+   kPoint { coords=[1/2,1/2,1/4]; weight=1; relative;}
+   folding=[5, 5, 1];
+}
+
+PAWHamiltonian  {
+   nEmptyStates = 20;
+   ekt = 0.1;
+   xc = PBE;
+   dipoleCorrection;
+   nExcessElectrons = -2;
+}
+
+initialGuess  {
+   waves { lcao { maxSteps=1; rhoMixing = 0.; }; pawBasis;}
+   rho { atomicOrbitals; charged {charge = 2; z=20;} }
+}
+
+main  {
+   linQN {
+      dEnergy = 1e-4;
+      maxSteps=150;
+      bornOppenheimer {
+         scfDiag {
+            rhoMixing= 0.5;
+            blockCCG { blockSize=64; }
+            dEnergy=1e-4;
+            maxSteps=150;
+         }
+      }
+   }
+}

@@ -914,7 +914,7 @@ class SphinxBase(GenericDFTJob):
         self.input_writer.structure = self.structure
         self.input_writer.copy_potentials(
             potformat=potformat,
-            xc=self.input.hamilton["xc"],
+            xc=self.input["Xcorr"],
             cwd=self.working_directory
             )
         self.set_species_group(
@@ -939,6 +939,7 @@ class SphinxBase(GenericDFTJob):
             file_name="userparameters.sx",
             cwd=self.working_directory
         )
+        print(self.working_directory)
         self.input_writer.write_species(self.input.species,
             cwd=self.working_directory, file_name="pawPot.sx")
         self.input_writer.write_structure(self.input.structure,
@@ -1394,7 +1395,7 @@ class Group(dict):
             k = k.split("___")[0]
             
             if k == "eCut":
-                v = round(v/13.606, 3)
+                v = f"{v}/13.606"
                 
             elif k == "scfDiag":
                 for step in content[k]:
@@ -1450,18 +1451,18 @@ class Input(GenericParameters):
         self.species = Group()
         self.structure = Group()
         self.basis = Group({
-            "eCut": 340,
+            "eCut": "EnCut",
             "kPoint": Group({
-                "coords": [1/2, 1/2, 1/2],
+                "coords": "KpointCoords",
                 "weight": 1,
                 "relative": True
             }),
-            "folding": [4, 4, 4]
+            "folding": "KpointFolding"
         })
         self.hamilton = Group({
             "nEmptyStates": "auto",  # will be updated based on structure
-            "ekt": 0.2,
-            "xc": "PBE"
+            "ekt": "Sigma",
+            "xc": "Xcorr"
         })
         self.guess = Group({
             "waves": Group({
